@@ -2,6 +2,12 @@ import java.lang.StringBuilder
 
 fun main(args: Array<String>) {
 
+    char2ASCII()
+
+    CaeserCryption().run()
+}
+
+private fun char2ASCII() {
     val str = "I Love You!"
     val charArray = str.toCharArray()
     val result = with(StringBuilder()) {
