@@ -5,6 +5,10 @@ fun main(args: Array<String>) {
     char2ASCII()
 
     CaeserCryption().run()
+
+    DESCryption().run()
+
+    AEScryption().run()
 }
 
 private fun char2ASCII() {
