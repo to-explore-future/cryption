@@ -9,6 +9,8 @@ fun main(args: Array<String>) {
     DESCryption().run()
 
     AEScryption().run()
+
+    RSAcryption().encryption()
 }
 
 private fun char2ASCII() {

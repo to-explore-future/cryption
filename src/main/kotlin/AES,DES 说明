@@ -1,0 +1,21 @@
+DES要求密码长度是 64bit，8byte 比如说：12345678 其中前七位是用于加密，而最后一位用来校验
+AES要求密码长度   128bit,16byte.
+
+DES: date encryption standard     : 数据加密标准
+AES: advanced encryption standard : 先进的加密标准
+
+算法               AES / DES
+工作模式           CBC / ECB
+填充模式           NoPadding / PKCS5Padding
+
+工作模式：
+- ECB
+    ：Electronic codeBook : 电子密码本
+    : 每块独立加密
+    ：分块可以并行处理
+    ：同样的原文得到同样的密文，容易被破解
+- CBC
+    : cipher block chaining:密码分组链接
+    ：每块加密依赖于前一块密文
+    ：同样的原文得到不同的密文，原文微小改动影响后面全部密文
+    ：加密需要串行处理，误差传递
