@@ -1,9 +1,7 @@
 import com.sun.org.apache.xml.internal.security.utils.Base64
 import sun.misc.BASE64Encoder
 import java.io.ByteArrayOutputStream
-import java.security.Key
-import java.security.KeyFactory
-import java.security.KeyPairGenerator
+import java.security.*
 import java.security.spec.PKCS8EncodedKeySpec
 import java.security.spec.X509EncodedKeySpec
 import javax.crypto.Cipher
@@ -13,37 +11,43 @@ class RSAcryption {
     private val rsaMaxEncryptionLength = 117
     private val rsaMaxDecryptionLength = 128
 
+    val privateKeyStr = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAL3GC6P2xGFU9nR+ITOVERIyGG5B\n" +
+            "kyRnf4cKEwLmzSqrOXXzN0zTJPNb0EJ+o8N8UajcMYBofeETAw46RUab60vjDev5cR7mjDsSVMBP\n" +
+            "54SvM6Z2ZkjzLbvvdbHNAyHx8CzghgRvbMAasjMMGcdwjjSbOVOOdVhzUtHOKHoqs3oFAgMBAAEC\n" +
+            "gYAgERDyecYhNDwY3x85Gh0yV+is6MO2SQ7RgLBJszpD1X72IUzc3GjH/mGoesGtTJp30A1FR2LN\n" +
+            "32qKwunlzn7pnqPgjrTyY07euBHH7YLPRpOJzxbFjunedhM/CAoiarUROmNHA/X2K/doYZxN+JYT\n" +
+            "YRmWcs90rcqxGV8FXGMAGQJBAPvLU9ADKAdqSN8psgirOeIB/83mrDEn62jotCjhlQHEnNMOUOd8\n" +
+            "f9mmHxQg8volpYpa7RP6ycc6YtTU5f1W6R8CQQDA8YSLgRSAggVF4a6LC1ulItjashXaZshX6C+L\n" +
+            "ajhyy1mxirep2hoFF0I5y0ChZ8YOxA6fsx0jTWXFll7h8eRbAkEAiNpGP3S3uPAHk2NyJEwMNc6o\n" +
+            "XhzV0hHEXUy9Psr81e0q33uUdXyxcHZdxe7yoQr9ImmxGX7hVKtjNBJSvpMSOQJBAIJxxv7aIhZP\n" +
+            "0WjRj8QJxcf7q0kQJZ4m50Qngh1rjwZtXRKfilSXVAglFW0lcWiuVEUfYBOwcP6xESFo7HUtqQkC\n" +
+            "QA6Tt46ulGcle+UzKZZpMxCXnWjvnwLSIoW1AxpPr/BbP+PAG1mz3ZF96m5mN2+TylFg+UgnsdC/\n" +
+            "nmISE/0nsZo="
+    val publicKeyStr = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC9xguj9sRhVPZ0fiEzlRESMhhuQZMkZ3+HChMC\n" +
+            "5s0qqzl18zdM0yTzW9BCfqPDfFGo3DGAaH3hEwMOOkVGm+tL4w3r+XEe5ow7ElTAT+eErzOmdmZI\n" +
+            "8y2773WxzQMh8fAs4IYEb2zAGrIzDBnHcI40mzlTjnVYc1LRzih6KrN6BQIDAQAB"
+
 
     fun encryption() {
 
-        val privateKeyStr = "MIICdwIBADANBgkqhkiG9w0BAQEFAASCAmEwggJdAgEAAoGBAL3GC6P2xGFU9nR+ITOVERIyGG5B\n" +
-                "kyRnf4cKEwLmzSqrOXXzN0zTJPNb0EJ+o8N8UajcMYBofeETAw46RUab60vjDev5cR7mjDsSVMBP\n" +
-                "54SvM6Z2ZkjzLbvvdbHNAyHx8CzghgRvbMAasjMMGcdwjjSbOVOOdVhzUtHOKHoqs3oFAgMBAAEC\n" +
-                "gYAgERDyecYhNDwY3x85Gh0yV+is6MO2SQ7RgLBJszpD1X72IUzc3GjH/mGoesGtTJp30A1FR2LN\n" +
-                "32qKwunlzn7pnqPgjrTyY07euBHH7YLPRpOJzxbFjunedhM/CAoiarUROmNHA/X2K/doYZxN+JYT\n" +
-                "YRmWcs90rcqxGV8FXGMAGQJBAPvLU9ADKAdqSN8psgirOeIB/83mrDEn62jotCjhlQHEnNMOUOd8\n" +
-                "f9mmHxQg8volpYpa7RP6ycc6YtTU5f1W6R8CQQDA8YSLgRSAggVF4a6LC1ulItjashXaZshX6C+L\n" +
-                "ajhyy1mxirep2hoFF0I5y0ChZ8YOxA6fsx0jTWXFll7h8eRbAkEAiNpGP3S3uPAHk2NyJEwMNc6o\n" +
-                "XhzV0hHEXUy9Psr81e0q33uUdXyxcHZdxe7yoQr9ImmxGX7hVKtjNBJSvpMSOQJBAIJxxv7aIhZP\n" +
-                "0WjRj8QJxcf7q0kQJZ4m50Qngh1rjwZtXRKfilSXVAglFW0lcWiuVEUfYBOwcP6xESFo7HUtqQkC\n" +
-                "QA6Tt46ulGcle+UzKZZpMxCXnWjvnwLSIoW1AxpPr/BbP+PAG1mz3ZF96m5mN2+TylFg+UgnsdC/\n" +
-                "nmISE/0nsZo="
-        val publicKeyStr = "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC9xguj9sRhVPZ0fiEzlRESMhhuQZMkZ3+HChMC\n" +
-                "5s0qqzl18zdM0yTzW9BCfqPDfFGo3DGAaH3hEwMOOkVGm+tL4w3r+XEe5ow7ElTAT+eErzOmdmZI\n" +
-                "8y2773WxzQMh8fAs4IYEb2zAGrIzDBnHcI40mzlTjnVYc1LRzih6KrN6BQIDAQAB"
+        val privateKey = generatePrivateKey()
+        val publicKey = generatePublicKey()
 
-        val keyFactory = KeyFactory.getInstance("RSA")
-        val privateKey = keyFactory.generatePrivate(PKCS8EncodedKeySpec(Base64.decode(privateKeyStr)))
-        val publicKey = keyFactory.generatePublic(X509EncodedKeySpec(Base64.decode(publicKeyStr)))
-
-
-        val input = "今天晚上九点老地方见面今天晚上九点老地方见面今天晚上九点老地方见面今天晚上九点老地方见面今天晚上九点老地方见面今天晚上九点老地方见面"
+        val input = "今天晚上九点老地方见面"
         val rSAPrivateKeyEncryptionResult = encryption(privateKey, input)
         println("RSA private encryption result: \n" + BASE64Encoder().encode(rSAPrivateKeyEncryptionResult))
 
         val rsaDecryptionResult = decryption(publicKey, rSAPrivateKeyEncryptionResult)
         println("RSA public decryption result: \n" + String(rsaDecryptionResult!!))
 
+    }
+
+    fun generatePublicKey(): PublicKey {
+        return KeyFactory.getInstance("RSA").generatePublic(X509EncodedKeySpec(Base64.decode(publicKeyStr)))
+    }
+
+    fun generatePrivateKey(): PrivateKey {
+        return KeyFactory.getInstance("RSA").generatePrivate(PKCS8EncodedKeySpec(Base64.decode(privateKeyStr)))
     }
 
     private fun generatePrivatePublicKey() {

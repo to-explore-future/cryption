@@ -11,6 +11,11 @@ fun main(args: Array<String>) {
     AEScryption().run()
 
     RSAcryption().encryption()
+
+    Digest().run()
+
+    SignatureUtil().run()
+
 }
 
 private fun char2ASCII() {
